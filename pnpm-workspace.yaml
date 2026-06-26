@@ -1,0 +1,2 @@
+minimumReleaseAge: 10080 # 7 days, in minutes
+blockExoticSubdeps: true # default in pnpm 11, but be explicit

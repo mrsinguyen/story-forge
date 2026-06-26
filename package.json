@@ -1,0 +1,58 @@
+{
+  "name": "story-forge",
+  "version": "0.0.0",
+  "private": true,
+  "description": "An open repository for AI-crafted stories, novels, and fictional worlds. A place where imagination is forged into narratives.",
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "tsc -b && vp build",
+    "preview": "vp preview",
+    "prepare": "vp config"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.4.1",
+    "@fontsource/be-vietnam-pro": "^5.2.8",
+    "@fontsource/eb-garamond": "^5.2.7",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/pirata-one": "^5.2.8",
+    "@phosphor-icons/react": "^2.1.10",
+    "@react-spring/web": "^10.0.3",
+    "@tanstack/react-router": "^1.168.25",
+    "@use-gesture/react": "^10.3.1",
+    "clsx": "^2.1.1",
+    "dexie": "^4.4.2",
+    "dexie-react-hooks": "^4.4.0",
+    "next-themes": "^0.4.6",
+    "qr-scanner": "^1.4.2",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-live": "^4.1.8",
+    "react-markdown": "^10.1.0",
+    "tailwind-merge": "^3.5.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.4",
+    "@tanstack/react-router-devtools": "^1.166.13",
+    "@tanstack/router-plugin": "^1.167.28",
+    "@types/node": "^24.12.2",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tailwindcss": "^4.2.4",
+    "typescript": "~6.0.2",
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vite-plugin-pwa": "^1.2.0",
+    "vite-plus": "latest",
+    "workbox-window": "^7.4.0"
+  },
+  "packageManager": "pnpm@10.33.4",
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+      "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    }
+  }
+}
