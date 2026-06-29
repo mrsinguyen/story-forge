@@ -20,7 +20,8 @@ import { SinGlyph } from "@src/components/thematic/sin-glyph";
 import { toggleBookmark, useBookmark } from "@src/lib/bookmarks";
 import { useNote } from "@src/lib/notes";
 import { bumpChapterProgress } from "@src/lib/progress";
-import { readerSettingsCssVars, useReaderSettings } from "@src/lib/reader-settings";
+import { readerSettingsCssVars } from "@src/lib/reader-settings-config";
+import { useReaderSettings } from "@src/lib/reader-settings";
 import { useTextToSpeech } from "@src/lib/tts";
 
 type PageTarget = { chapterId: string; pageNumber: string };
@@ -204,7 +205,7 @@ function PageReader() {
         opacity,
         willChange: "transform, opacity",
       }}
-      className="mx-auto max-w-[var(--reader-max-width,42rem)] px-6 py-12 sm:py-16"
+      className="mx-auto max-w-[var(--reader-max-width,42rem)] px-6 pt-12 pb-28 sm:pt-16 sm:pb-32"
     >
       <Link
         to="/library/$seriesId/$volumeId"
