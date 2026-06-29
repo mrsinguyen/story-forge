@@ -171,6 +171,12 @@ export type VolumeSlim = {
   // slug and dir name diverge (e.g. slug `princess-sleep` ↔ dir `sleep-princess`).
   publicDir?: string;
 
+  // Whether this volume ships a heavy `manifest.json` (cover / gallery /
+  // poetry / illustrations). Defaults to `true`. Set `false` for text-only
+  // volumes so `getHeavy()` skips the fetch entirely instead of probing a
+  // file that doesn't exist and logging a 404 on every volume-page load.
+  hasManifest?: boolean;
+
   chapter: VolumeChapter[];
   afterword?: VolumeChapter;
 };
@@ -314,8 +320,9 @@ export type VolumeBundle = {
    * Async volume metadata for the volume detail page — hero, poetry, gallery,
    * title page, plus the slim chapter list. Lazy-fetches the heavy manifest
    * from `public/novels/<publicDir>/manifest.json` and memoizes the result.
+   * Resolves to `undefined` for text-only volumes, which ship no manifest.
    */
-  meta: () => Promise<VolumeMeta>;
+  meta: () => Promise<VolumeMeta | undefined>;
   /** Lazy async resolver for one chapter's pages — single chapter's worth of fetches. */
   chapter: (chapterId: string) => Promise<ChapterType>;
   /**
@@ -353,9 +360,13 @@ function heavyManifestUrl(slim: VolumeSlim): string {
  * Routes consume the same bundle, so titles, ids, sin, page-counts can't drift.
  */
 export function Volume(slim: VolumeSlim): VolumeBundle {
-  let cachedHeavy: Promise<VolumeHeavy> | undefined;
-  function getHeavy(): Promise<VolumeHeavy> {
+  let cachedHeavy: Promise<VolumeHeavy | null> | undefined;
+  function getHeavy(): Promise<VolumeHeavy | null> {
     cachedHeavy ??= (async () => {
+      // Text-only volumes ship no manifest by design. Return `null` without a
+      // network round-trip so we don't probe (and 404 on) a file we know
+      // isn't there. Callers treat `null` as "no heavy metadata" and fall back.
+      if (slim.hasManifest === false) return null;
       const url = heavyManifestUrl(slim);
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
@@ -366,16 +377,17 @@ export function Volume(slim: VolumeSlim): VolumeBundle {
 
   return {
     slim: deriveSlim(slim),
-    meta: async () => deriveMeta(slim, await getHeavy()),
+    meta: async () => {
+      const heavy = await getHeavy();
+      return heavy ? deriveMeta(slim, heavy) : undefined;
+    },
     chapter: async (chapterId) => {
-      // Text-only volumes ship no heavy manifest, and a missing manifest.json
-      // comes back as the SPA index.html (200, not 404) in dev and on GitHub
-      // Pages — so `getHeavy()` rejects on the HTML body. Prose-only chapters
-      // reference no illustrations, so fall back to an empty map instead of
-      // failing. Mirrors how `getVolumeMeta` swallows the same failure.
+      // Prose-only chapters reference no illustrations. `getHeavy()` returns
+      // `null` for text-only volumes; the `catch` only guards a genuine
+      // manifest fetch failure on a volume that does declare one.
       let illustrations: Record<string, ImageAsset> = {};
       try {
-        illustrations = (await getHeavy()).chapterIllustration;
+        illustrations = (await getHeavy())?.chapterIllustration ?? {};
       } catch {
         illustrations = {};
       }
@@ -384,12 +396,15 @@ export function Volume(slim: VolumeSlim): VolumeBundle {
     chapterUrls: () => {
       const md = slim.chapter.flatMap((c) => urlsUnder(c.pages));
       const all = slim.afterword ? [...md, ...urlsUnder(slim.afterword.pages)] : md;
-      // Heavy manifest first so an offline reader has it in cache before
-      // any page render that depends on it (cover / illustration paths).
-      return [heavyManifestUrl(slim), ...all];
+      // Text-only volumes have no manifest to pre-cache. Otherwise list the
+      // heavy manifest first so an offline reader has it in cache before any
+      // page render that depends on it (cover / illustration paths).
+      return slim.hasManifest === false ? all : [heavyManifestUrl(slim), ...all];
     },
     imageUrls: async () => {
       const heavy = await getHeavy();
+      // Text-only volumes have no images to pre-cache.
+      if (!heavy) return [];
       // Set-deduped: chapterIllustration entries can be referenced by
       // multiple chapters but the underlying URL only needs caching once.
       const urls = new Set<string>();

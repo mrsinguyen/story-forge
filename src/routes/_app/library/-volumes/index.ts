@@ -20,8 +20,9 @@ export async function getVolumeMeta(id: string): Promise<VolumeMeta | undefined>
   const load = loaders[id];
   if (!load) return undefined;
   // Text-only volumes ship no heavy manifest (cover / gallery / poetry), so
-  // `meta()` fails to fetch one. Treat that as "no hero metadata" and let the
-  // volume detail page fall back to its slim header + chapter list.
+  // `meta()` resolves to `undefined` — the volume detail page falls back to
+  // its slim header + chapter list. The `catch` guards a genuine manifest
+  // fetch failure on a volume that does declare one.
   try {
     return await (await load()).meta();
   } catch {

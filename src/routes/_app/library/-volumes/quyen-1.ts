@@ -18,6 +18,7 @@ export const quyen1 = Volume({
   series: "nhat-pham-ky",
 
   publicDir: "nhat-pham-ky",
+  hasManifest: false,
 
   chapter: [
     {
