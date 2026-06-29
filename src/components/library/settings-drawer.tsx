@@ -11,8 +11,8 @@ import {
   FONT_FAMILY_OPTIONS,
   READER_BOUNDS,
   readerSettingsCssVars,
-  useReaderSettings,
-} from "@src/lib/reader-settings";
+} from "@src/lib/reader-settings-config";
+import { useReaderSettings } from "@src/lib/reader-settings";
 import { cn } from "@src/lib/cn";
 
 const PREVIEW_TEXT = `The princess of Lucifenia, only fourteen years old, watched her kingdom turn to ruin while the servant who shared her face stood at her side.
