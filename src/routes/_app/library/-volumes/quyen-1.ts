@@ -408,7 +408,7 @@ export const quyen1 = Volume({
     {
       id: "v1-c065",
       number: 65,
-      title: "Hỏa Cầu Phù Cũ",
+      title: "Phiến Đá Góc Tây",
       pages: "./nhat-pham-ky/chapters/v1-065",
     },
     {
